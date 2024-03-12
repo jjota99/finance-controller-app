@@ -1,7 +1,8 @@
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import GenericForm from '@/app/components/Form/Form'
 import { FormTypeEnum } from '@/app/components/Login/Login'
 import { compareByOrder } from '@/app/utils/CompareByOrder'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 type TUserFormInput = {
     label: string
@@ -10,6 +11,13 @@ type TUserFormInput = {
     maxLength?: number
     variant?: string
     order: number
+}
+
+export type TLoginForm = {
+    name?: string
+    cpf: string
+    password: string
+    passwordConfirm?: string
 }
 
 type Props = {
@@ -23,7 +31,10 @@ export default function LoginForm({ formType }: Props): ReactElement {
         password: '',
         passwordConfirm: '',
     }
-    const onSubmit = (data: any) => console.log(data)
+
+    const { handleSubmit, reset, control } = useForm<TLoginForm, Partial<TLoginForm>>()
+    const onSubmit: SubmitHandler<TLoginForm> = (data: TLoginForm) => console.log(data)
+    const onReset = () => reset(initialValues)
 
     const formInputsDecider = useMemo(() => {
         const formInputs: TUserFormInput[] = [
@@ -63,11 +74,14 @@ export default function LoginForm({ formType }: Props): ReactElement {
         return formInputs.sort(compareByOrder)
     }, [formType])
 
+    useEffect(() => onReset, [formType])
+
     return (
         <GenericForm
             formInputs={formInputsDecider}
-            initialValues={initialValues}
-            onSubmit={onSubmit}
+            onSubmit={handleSubmit(onSubmit)}
+            onReset={onReset}
+            control={control}
         />
     )
 }
