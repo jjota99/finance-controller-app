@@ -21,6 +21,7 @@ export default function Button({
             {...rest}
             type={type}
             className={clsx(
+                'w-full',
                 BG_COLORS_MAP[variant],
                 PADDING_MAP[size],
                 FONT_MAP[size],

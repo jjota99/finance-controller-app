@@ -1,15 +1,15 @@
 'use client'
 
 import { type ReactElement, useState } from 'react'
-import LoginForm from '@/app/components/Login/components/Form'
+import LoginForm from '@/app/components/Login/components/LoginForm'
 
-export enum FormType {
+export enum FormTypeEnum {
     REGISTER = 'register',
     LOGIN = 'login',
 }
 
 export default function Login(): ReactElement {
-    const [formType, setFormType] = useState<FormType>(FormType.LOGIN)
+    const [formType, setFormType] = useState<FormTypeEnum>(FormTypeEnum.LOGIN)
 
     return (
         <main className="flex flex-1 items-center justify-center">
@@ -23,13 +23,15 @@ export default function Login(): ReactElement {
                     role="button"
                     onClick={() =>
                         setFormType(
-                            formType === FormType.LOGIN
-                                ? FormType.REGISTER
-                                : FormType.LOGIN
+                            formType === FormTypeEnum.LOGIN
+                                ? FormTypeEnum.REGISTER
+                                : FormTypeEnum.LOGIN
                         )
                     }
                 >
-                    {formType === FormType.LOGIN ? 'Cadastre-se' : 'Login'}
+                    {formType === FormTypeEnum.LOGIN
+                        ? 'Cadastre-se'
+                        : '< Voltar para login'}
                 </span>
             </div>
         </main>
