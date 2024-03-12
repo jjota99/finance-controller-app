@@ -3,22 +3,8 @@ import GenericForm from '@/app/components/Form/Form'
 import { FormTypeEnum } from '@/app/components/Login/Login'
 import { compareByOrder } from '@/app/utils/CompareByOrder'
 import { SubmitHandler, useForm } from 'react-hook-form'
-
-type TUserFormInput = {
-    label: string
-    placeholder: string
-    name: string
-    maxLength?: number
-    variant?: string
-    order: number
-}
-
-export type TLoginForm = {
-    name?: string
-    cpf: string
-    password: string
-    passwordConfirm?: string
-}
+import { TLoginForm } from '@/app/types/login'
+import { TFormInput } from '@/app/types/form'
 
 type Props = {
     formType: FormTypeEnum
@@ -37,7 +23,7 @@ export default function LoginForm({ formType }: Props): ReactElement {
     const onReset = () => reset(initialValues)
 
     const formInputsDecider = useMemo(() => {
-        const formInputs: TUserFormInput[] = [
+        const formInputs: TFormInput[] = [
             {
                 label: 'CPF',
                 placeholder: 'Digite seu CPF',
