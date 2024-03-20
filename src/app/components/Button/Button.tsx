@@ -5,7 +5,7 @@ type Props = {
     title: string
     onClick?: (param?: any) => void
     size: 'sm' | 'md' | 'lg'
-    variant: 'primary' | 'secondary'
+    variant: 'primary' | 'secondary' | 'danger'
     type?: 'button' | 'submit' | 'reset'
 }
 export default function Button({
@@ -35,13 +35,15 @@ export default function Button({
 }
 
 const BG_COLORS_MAP = {
-    primary: 'bg-green-600',
+    primary: 'bg-green-600 hover:bg-green-500',
     secondary: 'bg-white',
+    danger: 'bg-red-600 hover:bg-red-500',
 }
 
 const TEXT_COLORS_MAP = {
     primary: 'text-neutral-200',
     secondary: 'text-neutral-800',
+    danger: 'text-neutral-200',
 }
 
 const PADDING_MAP = {

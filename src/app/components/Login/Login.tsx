@@ -19,7 +19,7 @@ export default function Login(): ReactElement {
                 <LoginForm formType={formType} />
 
                 <span
-                    className="text-xl text-neutral-200 underline cursor-pointer"
+                    className="text-base text-neutral-200 underline cursor-pointer hover:text-neutral-400"
                     role="button"
                     onClick={() =>
                         setFormType(
