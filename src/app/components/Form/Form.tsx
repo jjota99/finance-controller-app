@@ -6,7 +6,7 @@ import { TFormInput } from '@/app/types/form'
 
 type Props = {
     formInputs: TFormInput[]
-    onSubmit: () => void
+    onSubmit: (param: any) => void
     onReset: () => void
     control: Control<any, any>
 }
