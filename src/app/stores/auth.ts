@@ -1,9 +1,28 @@
-import { create } from 'zustand'
+import { create, UseBoundStore } from 'zustand'
+import { StoreApi } from 'zustand/vanilla'
 
 type TStoreState = {
-    created: boolean
+    saveTokenInLocalStorage: (token: string) => void
+    getTokenInLocalStorage: () => string | null
 }
 
-export const useAuthStore = create<TStoreState>((set) => ({
-    created: true,
-}))
+export const useAuthStore: UseBoundStore<StoreApi<TStoreState>> = create<TStoreState>(
+    (set) => ({
+        saveTokenInLocalStorage: (token?: string): void => {
+            const {
+                localStorage: { setItem },
+            } = window
+
+            if (token) {
+                setItem('access_token', token)
+            }
+        },
+        getTokenInLocalStorage: (): string | null => {
+            const {
+                localStorage: { getItem },
+            } = window
+
+            return getItem('access_token')
+        },
+    })
+)

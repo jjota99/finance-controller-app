@@ -1,16 +1,23 @@
-import { ReactElement, useEffect, useMemo } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useEffect, useMemo } from 'react'
 import GenericForm from '@/app/components/Form/Form'
 import { FormTypeEnum } from '@/app/components/Login/Login'
 import { compareByOrder } from '@/app/utils/CompareByOrder'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { TLoginForm } from '@/app/types/login'
 import { TFormInput } from '@/app/types/form'
+import { api } from '@/app/api/api'
+import { AxiosResponse } from 'axios'
+import { toast } from 'sonner'
+import { useAuthStore } from '@/app/stores/auth'
 
 type Props = {
     formType: FormTypeEnum
+    setFormType: Dispatch<SetStateAction<FormTypeEnum>>
 }
 
-export default function LoginForm({ formType }: Props): ReactElement {
+export default function LoginForm({ formType, setFormType }: Props): ReactElement {
+    const { saveTokenInLocalStorage } = useAuthStore()
+
     const initialValues = {
         name: '',
         cpf: '',
@@ -19,7 +26,38 @@ export default function LoginForm({ formType }: Props): ReactElement {
     }
 
     const { handleSubmit, reset, control } = useForm<TLoginForm, Partial<TLoginForm>>()
-    const onSubmit: SubmitHandler<TLoginForm> = (data: TLoginForm) => console.log(data)
+    const onSubmit: SubmitHandler<TLoginForm> = async (data: TLoginForm) => {
+        if (formType === FormTypeEnum.REGISTER) {
+            await api
+                .post('/users', data)
+                .then((response: AxiosResponse<TLoginForm, void>) => {
+                    toast.success('Conta criada com sucesso!', {
+                        className: 'bg-green-700 text-neutral-200',
+                    })
+
+                    onReset()
+                    setFormType(FormTypeEnum.LOGIN)
+                })
+                .catch((error) =>
+                    toast.error(error.response.data.error, {
+                        className: 'bg-red-700 text-neutral-200',
+                    })
+                )
+        }
+
+        await api
+            .post('/auth/sign-in', data)
+            .then((response: AxiosResponse<{ access_token: string }, TLoginForm>) => {
+                if (response.status === 200) {
+                    saveTokenInLocalStorage(response?.data?.access_token)
+                }
+            })
+            .catch((error) =>
+                toast.error(error.response.data.error, {
+                    className: 'bg-red-700 text-neutral-200',
+                })
+            )
+    }
     const onReset = () => reset(initialValues)
 
     const formInputsDecider = useMemo(() => {

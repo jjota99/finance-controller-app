@@ -16,7 +16,7 @@ export default function Login(): ReactElement {
             <div className="fixed inset-y-36 bg-neutral-900 p-8 flex flex-col justify-between items-center w-1/4 min-h-[650px] rounded">
                 <h1 className="text-2xl text-neutral-200">Login</h1>
 
-                <LoginForm formType={formType} />
+                <LoginForm formType={formType} setFormType={setFormType} />
 
                 <span
                     className="text-base text-neutral-200 underline cursor-pointer hover:text-neutral-400"
@@ -31,7 +31,7 @@ export default function Login(): ReactElement {
                 >
                     {formType === FormTypeEnum.LOGIN
                         ? 'Cadastre-se'
-                        : '< Voltar para login'}
+                        : 'Voltar para login'}
                 </span>
             </div>
         </main>
