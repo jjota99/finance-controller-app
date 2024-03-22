@@ -17,6 +17,7 @@ export const useAuthStore: UseBoundStore<StoreApi<TStoreState>> = create<TStoreS
                 setItem('access_token', token)
             }
         },
+
         getTokenInLocalStorage: (): string | null => {
             const {
                 localStorage: { getItem },

@@ -18,13 +18,35 @@ type Props = {
 export default function LoginForm({ formType, setFormType }: Props): ReactElement {
     const { saveTokenInLocalStorage } = useAuthStore()
 
-    const initialValues = {
-        name: '',
-        cpf: '',
-        password: '',
-        passwordConfirm: '',
-    }
-
+    const formInputs: TFormInput[] = [
+        {
+            label: 'CPF',
+            placeholder: 'Digite seu CPF',
+            name: 'cpf',
+            maxLength: 11,
+            order: 1,
+        },
+        {
+            label: 'Senha',
+            placeholder: 'Digite sua senha',
+            name: 'password',
+            variant: 'password',
+            order: 2,
+        },
+        {
+            label: 'Confirmação de senha',
+            placeholder: 'Digite a confirmação de sua senha',
+            name: 'passwordConfirm',
+            variant: 'password',
+            order: 3,
+        },
+        {
+            label: 'Nome',
+            placeholder: 'Digite seu nome',
+            name: 'name',
+            order: 0,
+        },
+    ]
     const { handleSubmit, reset, control } = useForm<TLoginForm, Partial<TLoginForm>>()
     const onSubmit: SubmitHandler<TLoginForm> = async (data: TLoginForm) => {
         if (formType === FormTypeEnum.REGISTER) {
@@ -34,7 +56,6 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
                     toast.success('Conta criada com sucesso!', {
                         className: 'bg-green-700 text-neutral-200',
                     })
-
                     onReset()
                     setFormType(FormTypeEnum.LOGIN)
                 })
@@ -49,6 +70,9 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             .post('/auth/sign-in', data)
             .then((response: AxiosResponse<{ access_token: string }, TLoginForm>) => {
                 if (response.status === 200) {
+                    if (!response?.data) {
+                        return
+                    }
                     saveTokenInLocalStorage(response?.data?.access_token)
                 }
             })
@@ -58,39 +82,15 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
                 })
             )
     }
-    const onReset = () => reset(initialValues)
+    const onReset = () =>
+        reset({
+            name: '',
+            cpf: '',
+            password: '',
+            passwordConfirm: '',
+        })
 
     const formInputsDecider = useMemo(() => {
-        const formInputs: TFormInput[] = [
-            {
-                label: 'CPF',
-                placeholder: 'Digite seu CPF',
-                name: 'cpf',
-                maxLength: 11,
-                order: 1,
-            },
-            {
-                label: 'Senha',
-                placeholder: 'Digite sua senha',
-                name: 'password',
-                variant: 'password',
-                order: 2,
-            },
-            {
-                label: 'Confirmação de senha',
-                placeholder: 'Digite a confirmação de sua senha',
-                name: 'passwordConfirm',
-                variant: 'password',
-                order: 3,
-            },
-            {
-                label: 'Nome',
-                placeholder: 'Digite seu nome',
-                name: 'name',
-                order: 0,
-            },
-        ]
-
         if (formType === FormTypeEnum.LOGIN) {
             return formInputs.slice(0, 2)
         }
