@@ -2,6 +2,7 @@
 
 import { type ReactElement, useState } from 'react'
 import LoginForm from '@/app/components/Login/components/LoginForm'
+import { NextRouter } from 'next/router'
 
 export enum FormTypeEnum {
     REGISTER = 'register',

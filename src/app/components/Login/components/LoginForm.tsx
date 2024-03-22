@@ -9,6 +9,7 @@ import { api } from '@/app/api/api'
 import { AxiosResponse } from 'axios'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/app/stores/auth'
+import { usePathname, useRouter } from 'next/navigation'
 
 type Props = {
     formType: FormTypeEnum
@@ -17,6 +18,7 @@ type Props = {
 
 export default function LoginForm({ formType, setFormType }: Props): ReactElement {
     const { saveTokenInLocalStorage } = useAuthStore()
+    const router = useRouter()
 
     const formInputs: TFormInput[] = [
         {
@@ -64,16 +66,16 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
                         className: 'bg-red-700 text-neutral-200',
                     })
                 )
+
+            return
         }
 
         await api
             .post('/auth/sign-in', data)
             .then((response: AxiosResponse<{ access_token: string }, TLoginForm>) => {
                 if (response.status === 200) {
-                    if (!response?.data) {
-                        return
-                    }
                     saveTokenInLocalStorage(response?.data?.access_token)
+                    router.push('/MainDashboard')
                 }
             })
             .catch((error) =>
