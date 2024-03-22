@@ -1,7 +1,7 @@
 import Input from '@/app/components/Input/Input'
 import Button from '@/app/components/Button/Button'
 import { Control, Controller } from 'react-hook-form'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { TFormInput } from '@/app/types/form'
 
 type Props = {
@@ -23,17 +23,31 @@ export default function GenericForm({
                 <Controller
                     key={input.name}
                     rules={{
-                        required: true,
-                        maxLength: input.maxLength,
+                        required: {
+                            value: input.rules.required?.value,
+                            message: input.rules.required?.message,
+                        },
+                        maxLength: {
+                            value: input.rules.maxLength?.value as number,
+                            message: input.rules.maxLength?.message as string,
+                        },
                     }}
-                    render={({ field }) => (
-                        <Input
-                            label={input.label}
-                            size={input.size || 'lg'}
-                            variant={input.variant || 'text'}
-                            placeholder={input.placeholder}
-                            {...field}
-                        />
+                    render={({ field, formState: { errors } }) => (
+                        <div className="flex flex-col flex-1 gap-1">
+                            <Input
+                                maxLength={input.rules.maxLength?.value as number}
+                                label={input.label}
+                                size={input.size || 'lg'}
+                                variant={input.variant || 'text'}
+                                placeholder={input.placeholder}
+                                {...field}
+                            />
+                            {errors && (
+                                <span className="text-red-600">
+                                    {errors[input.name]?.message as ReactNode}
+                                </span>
+                            )}
+                        </div>
                     )}
                     name={input.name}
                     control={control}

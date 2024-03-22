@@ -9,7 +9,7 @@ import { api } from '@/app/api/api'
 import { AxiosResponse } from 'axios'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/app/stores/auth'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 type Props = {
     formType: FormTypeEnum
@@ -17,44 +17,16 @@ type Props = {
 }
 
 export default function LoginForm({ formType, setFormType }: Props): ReactElement {
-    const { saveTokenInLocalStorage } = useAuthStore()
+    const { saveTokenInLocalStorage, getTokenInLocalStorage } = useAuthStore()
+    const access_token = getTokenInLocalStorage()
     const router = useRouter()
 
-    const formInputs: TFormInput[] = [
-        {
-            label: 'CPF',
-            placeholder: 'Digite seu CPF',
-            name: 'cpf',
-            maxLength: 11,
-            order: 1,
-        },
-        {
-            label: 'Senha',
-            placeholder: 'Digite sua senha',
-            name: 'password',
-            variant: 'password',
-            order: 2,
-        },
-        {
-            label: 'Confirmação de senha',
-            placeholder: 'Digite a confirmação de sua senha',
-            name: 'passwordConfirm',
-            variant: 'password',
-            order: 3,
-        },
-        {
-            label: 'Nome',
-            placeholder: 'Digite seu nome',
-            name: 'name',
-            order: 0,
-        },
-    ]
     const { handleSubmit, reset, control } = useForm<TLoginForm, Partial<TLoginForm>>()
     const onSubmit: SubmitHandler<TLoginForm> = async (data: TLoginForm) => {
         if (formType === FormTypeEnum.REGISTER) {
             await api
                 .post('/users', data)
-                .then((response: AxiosResponse<TLoginForm, void>) => {
+                .then((response: AxiosResponse<void, TLoginForm>) => {
                     toast.success('Conta criada com sucesso!', {
                         className: 'bg-green-700 text-neutral-200',
                     })
@@ -71,7 +43,9 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
         }
 
         await api
-            .post('/auth/sign-in', data)
+            .post('/auth/sign-in', data, {
+                headers: { Authorization: `Bearer: ${access_token}` },
+            })
             .then((response: AxiosResponse<{ access_token: string }, TLoginForm>) => {
                 if (response.status === 200) {
                     saveTokenInLocalStorage(response?.data?.access_token)
@@ -91,6 +65,48 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             password: '',
             passwordConfirm: '',
         })
+
+    const formInputs: TFormInput[] = [
+        {
+            label: 'CPF',
+            placeholder: 'Digite seu CPF',
+            name: 'cpf',
+            rules: {
+                required: { value: true, message: 'Campo obrigatório' },
+                maxLength: { value: 11, message: 'Obrigatório ter 11 digitos!' },
+            },
+            order: 1,
+        },
+        {
+            label: 'Senha',
+            placeholder: 'Digite sua senha',
+            name: 'password',
+            rules: {
+                required: { value: true, message: 'Campo obrigatório' },
+            },
+            variant: 'password',
+            order: 2,
+        },
+        {
+            label: 'Confirmação de senha',
+            placeholder: 'Digite a confirmação de sua senha',
+            name: 'passwordConfirm',
+            rules: {
+                required: { value: true, message: 'Campo obrigatório' },
+            },
+            variant: 'password',
+            order: 3,
+        },
+        {
+            label: 'Nome',
+            placeholder: 'Digite seu nome',
+            name: 'name',
+            rules: {
+                required: { value: true, message: 'Campo obrigatório' },
+            },
+            order: 0,
+        },
+    ]
 
     const formInputsDecider = useMemo(() => {
         if (formType === FormTypeEnum.LOGIN) {

@@ -8,6 +8,7 @@ type Props = {
     size?: 'sm' | 'md' | 'lg'
     variant?: 'text' | 'password' | 'number'
     placeholder: string
+    maxLength?: number
     initialValue?: string | number
 }
 
@@ -16,6 +17,7 @@ export default function Input({
     size = 'md',
     variant = 'text',
     placeholder,
+    maxLength,
     initialValue = '',
     ...rest
 }: Props): ReactElement {
@@ -35,6 +37,7 @@ export default function Input({
                 )}
             >
                 <input
+                    maxLength={maxLength}
                     value={initialValue}
                     placeholder={placeholder}
                     type={showPassword ? 'text' : variant}

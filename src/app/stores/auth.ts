@@ -9,21 +9,13 @@ type TStoreState = {
 export const useAuthStore: UseBoundStore<StoreApi<TStoreState>> = create<TStoreState>(
     (set) => ({
         saveTokenInLocalStorage: (token?: string): void => {
-            const {
-                localStorage: { setItem },
-            } = window
-
             if (token) {
-                setItem('access_token', token)
+                window.localStorage.setItem('access_token', token)
             }
         },
-
         getTokenInLocalStorage: (): string | null => {
-            const {
-                localStorage: { getItem },
-            } = window
-
-            return getItem('access_token')
+            const access_token = window.localStorage.getItem('access_token')
+            return access_token
         },
     })
 )
