@@ -43,9 +43,7 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
         }
 
         await api
-            .post('/auth/sign-in', data, {
-                headers: { Authorization: `Bearer: ${access_token}` },
-            })
+            .post('/auth/sign-in', { ...data, token: access_token })
             .then((response: AxiosResponse<{ access_token: string }, TLoginForm>) => {
                 if (response.status === 200) {
                     saveTokenInLocalStorage(response?.data?.access_token)
