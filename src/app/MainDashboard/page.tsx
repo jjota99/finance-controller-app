@@ -14,9 +14,21 @@ export default function MainDashboard() {
     const access_token = getTokenInLocalStorage()
 
     const amountCards: TAmountCard[] = [
-        { title: 'Entrada', value: amountDetail?.income, type: 'income' },
-        { title: 'Saida', value: amountDetail?.outcome, type: 'outcome' },
-        { title: 'Total', value: amountDetail?.total, type: 'total' },
+        {
+            title: 'Entrada',
+            value: amountDetail?.income?.value,
+            status: amountDetail?.income?.status,
+        },
+        {
+            title: 'Saida',
+            value: amountDetail?.outcome?.value,
+            status: amountDetail?.outcome?.status,
+        },
+        {
+            title: 'Total',
+            value: amountDetail?.total?.value,
+            status: amountDetail?.total?.status,
+        },
     ]
 
     useEffect(() => {
@@ -39,7 +51,7 @@ export default function MainDashboard() {
 
     return (
         <main className="w-full h-full flex flex-col gap-8 p-8">
-            <h1 className="text-neutral-200 text-xl">Olá, {user.name}!</h1>
+            <h1 className="text-neutral-200 text-xl font-semibold">Olá, {user.name}!</h1>
 
             <div className="flex flex-1 flex-col items-center gap-16">
                 <div className="w-full flex flex-1 gap-4">
@@ -48,7 +60,7 @@ export default function MainDashboard() {
                             title={card.title}
                             key={index}
                             value={card.value}
-                            type={card.type}
+                            status={card.status}
                         />
                     ))}
                 </div>

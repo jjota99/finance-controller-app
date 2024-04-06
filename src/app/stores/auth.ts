@@ -17,7 +17,6 @@ export const useAuthStore: UseBoundStore<StoreApi<TStoreState>> = create<TStoreS
             cpf: null,
         },
         setUser: (user) => {
-            console.log(user)
             set({ user: user })
         },
         saveTokenInLocalStorage: (token?: string): void => {

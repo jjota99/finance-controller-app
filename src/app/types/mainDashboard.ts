@@ -5,13 +5,13 @@ export type TMeResponse = {
 }
 
 export type TAmountDetail = {
-    income: number
-    outcome: number
-    total: number
+    income: { value: string; status: string }
+    outcome: { value: string; status: string }
+    total: { value: string; status: string }
 }
 
 export type TAmountCard = {
     title: string
-    value?: number
-    type: 'income' | 'outcome' | 'total'
+    value?: string
+    status?: string
 }
