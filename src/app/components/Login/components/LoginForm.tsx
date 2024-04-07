@@ -34,7 +34,7 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
                     setFormType(FormTypeEnum.LOGIN)
                 })
                 .catch((error) =>
-                    toast.error(error.response.data.error, {
+                    toast.error(error.message, {
                         className: 'bg-red-700 text-neutral-200',
                     })
                 )
@@ -50,11 +50,11 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
                     router.push('/MainDashboard')
                 }
             })
-            .catch((error) =>
-                toast.error(error.response.data.error, {
+            .catch((error) => {
+                toast.error(error.response.data.message, {
                     className: 'bg-red-700 text-neutral-200',
                 })
-            )
+            })
     }
     const onReset = () =>
         reset({
@@ -105,7 +105,6 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             order: 0,
         },
     ]
-
     const formInputsDecider = useMemo(() => {
         if (formType === FormTypeEnum.LOGIN) {
             return formInputs.slice(0, 2)
