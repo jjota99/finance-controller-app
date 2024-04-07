@@ -32,20 +32,21 @@ export default function MainDashboard() {
     ]
 
     useEffect(() => {
-        api.get('/auth/me', { params: { token: access_token } })
-            .then((response: AxiosResponse<Partial<TMeResponse>, { token: string }>) =>
+        api.get('/auth/me', { params: { token: access_token } }).then(
+            (response: AxiosResponse<Partial<TMeResponse>, { token: string }>) =>
                 setUser(response.data)
-            )
-            .catch((error) => console.log(error))
+        )
     }, [])
 
     useEffect(() => {
         if (user.id) {
-            api.get(`transactions/amount-detail/${user.id}`)
-                .then((response: AxiosResponse<TAmountDetail, any>) =>
-                    setAmountDetail(response.data)
-                )
-                .catch((error) => console.log(error))
+            api.get(`transactions/amount-detail/${user.id}`, {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((response: AxiosResponse<TAmountDetail, any>) =>
+                setAmountDetail(response.data)
+            )
         }
     }, [user.id])
 
