@@ -5,7 +5,7 @@ import { api } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
 import { AxiosResponse } from 'axios'
 import { TAmountCard, TAmountDetail, TMeResponse } from '@/app/types/mainDashboard'
-import AmountCard from '@/app/MainDashboard/components/AmountCard'
+import { AmountCard } from '@/app/MainDashboard/components/index'
 
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
