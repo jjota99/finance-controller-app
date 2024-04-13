@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-import Header from '@/app/components/Header/Header'
-import Footer from '@/app/components/Footer/Footer'
+
 import { Toaster } from 'sonner'
+import Header from '@/app/components/Header/Header'
 
 export const metadata: Metadata = {
     title: 'Finance Controller',
@@ -21,7 +20,6 @@ export default function RootLayout({
                 <Toaster position="top-right" />
                 <Header />
                 {children}
-                <Footer />
             </body>
         </html>
     )

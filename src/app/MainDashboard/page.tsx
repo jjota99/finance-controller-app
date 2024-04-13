@@ -4,11 +4,21 @@ import { useEffect, useState } from 'react'
 import { api } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
 import { AxiosResponse } from 'axios'
-import { TAmountCard, TAmountDetail, TMeResponse } from '@/app/types/mainDashboard'
-import { AmountCard } from '@/app/MainDashboard/components/index'
+import {
+    TAmountCard,
+    TAmountDetail,
+    TMeResponse,
+    TTransactions,
+} from '@/app/types/mainDashboard'
+import AmountCard from '@/app/components/AmountCard'
+import Table from '@/app/components/Table/Table'
+import Dialog from '@/app/components/Dialog/Dialog'
+import NewTransaction from '@/app/MainDashboard/components/NewTransaction/NewTransaction'
 
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
+    const [transactions, setTransactions] = useState<TTransactions[]>([])
+    const [open, setOpen] = useState<boolean>(false)
 
     const { getTokenInLocalStorage, setUser, user } = useAuthStore()
     const access_token = getTokenInLocalStorage()
@@ -31,6 +41,32 @@ export default function MainDashboard() {
         },
     ]
 
+    const tableColumns: Array<{
+        key:
+            | 'transactionName'
+            | 'transactionDate'
+            | 'transactionType'
+            | 'transactionValue'
+        label: string
+    }> = [
+        {
+            key: 'transactionName',
+            label: 'Nome',
+        },
+        {
+            key: 'transactionDate',
+            label: 'Data',
+        },
+        {
+            key: 'transactionType',
+            label: 'Tipo',
+        },
+        {
+            key: 'transactionValue',
+            label: 'Valor',
+        },
+    ]
+
     useEffect(() => {
         api.get('/auth/me', { params: { token: access_token } }).then(
             (response: AxiosResponse<Partial<TMeResponse>, { token: string }>) =>
@@ -46,6 +82,14 @@ export default function MainDashboard() {
                 },
             }).then((response: AxiosResponse<TAmountDetail, any>) =>
                 setAmountDetail(response.data)
+            )
+
+            api.get(`transactions/${user.id}`, {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((response: AxiosResponse<TTransactions[], any>) =>
+                setTransactions(response.data)
             )
         }
     }, [user.id])
@@ -66,8 +110,23 @@ export default function MainDashboard() {
                     ))}
                 </div>
 
-                <div>Tabela</div>
+                <div className="w-full flex flex-col gap-y-2">
+                    <span
+                        role="button"
+                        className="text-green-600 text-right hover:text-green-700"
+                        onClick={() => setOpen(true)}
+                    >
+                        + Nova transação
+                    </span>
+                    <Table columns={tableColumns} rows={transactions} />
+                </div>
             </div>
+
+            <Dialog
+                content={<NewTransaction setOpen={setOpen} />}
+                open={open}
+                setOpen={setOpen}
+            />
         </main>
     )
 }

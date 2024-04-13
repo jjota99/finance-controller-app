@@ -15,3 +15,10 @@ export type TAmountCard = {
     value?: string
     status?: string
 }
+
+export type TTransactions = {
+    transactionName: string
+    transactionDate: string
+    transactionType: string
+    transactionValue: string
+}

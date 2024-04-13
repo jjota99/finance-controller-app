@@ -69,6 +69,7 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             label: 'CPF',
             placeholder: 'Digite seu CPF',
             name: 'cpf',
+            type: 'input',
             rules: {
                 required: { value: true, message: 'Campo obrigatório' },
                 maxLength: { value: 11, message: 'Obrigatório ter 11 digitos!' },
@@ -79,6 +80,7 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             label: 'Senha',
             placeholder: 'Digite sua senha',
             name: 'password',
+            type: 'input',
             rules: {
                 required: { value: true, message: 'Campo obrigatório' },
             },
@@ -89,6 +91,7 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             label: 'Confirmação de senha',
             placeholder: 'Digite a confirmação de sua senha',
             name: 'passwordConfirm',
+            type: 'input',
             rules: {
                 required: { value: true, message: 'Campo obrigatório' },
             },
@@ -99,6 +102,7 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
             label: 'Nome',
             placeholder: 'Digite seu nome',
             name: 'name',
+            type: 'input',
             rules: {
                 required: { value: true, message: 'Campo obrigatório' },
             },
