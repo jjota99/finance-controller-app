@@ -20,7 +20,7 @@ export default function TableFooter({ pages, setTransactions }: Props): ReactEle
                     .get(`transactions/${user.id}`, {
                         params: {
                             page,
-                            pageSize: '10',
+                            pageSize: 5,
                         },
                         headers: {
                             Authorization: `Bearer ${access_token}`,

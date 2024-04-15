@@ -8,6 +8,7 @@ type Props = {
             | 'transactionDate'
             | 'transactionType'
             | 'transactionValue'
+            | 'actions'
     }>
 }
 

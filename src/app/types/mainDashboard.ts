@@ -17,11 +17,15 @@ export type TAmountCard = {
 }
 
 export type TTransactions = {
-    data: Array<{
-        transactionName: string
-        transactionDate: string
-        transactionType: string
-        transactionValue: string
-    }>
+    data: Array<TTransaction>
     total: number
+}
+
+export type TTransaction = {
+    userId?: number
+    transactionId?: number
+    transactionName: string
+    transactionDate: string
+    transactionType: string
+    transactionValue: number
 }

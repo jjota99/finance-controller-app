@@ -18,7 +18,8 @@ import Modal from '@/app/components/Modal/Modal'
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
     const [transactions, setTransactions] = useState<TTransactions>()
-    const [open, setOpen] = useState<boolean>(false)
+    const [newTransacationModalIsOpen, setNewTransacationModalIsOpen] =
+        useState<boolean>(false)
 
     const { getTokenInLocalStorage, setUser, user } = useAuthStore()
     const access_token = getTokenInLocalStorage()
@@ -47,6 +48,7 @@ export default function MainDashboard() {
             | 'transactionDate'
             | 'transactionType'
             | 'transactionValue'
+            | 'actions'
         label: string
     }> = [
         {
@@ -64,6 +66,10 @@ export default function MainDashboard() {
         {
             key: 'transactionValue',
             label: 'Valor',
+        },
+        {
+            key: 'actions',
+            label: 'Ações',
         },
     ]
 
@@ -87,7 +93,7 @@ export default function MainDashboard() {
             api.get(`transactions/${user.id}`, {
                 params: {
                     page: 1,
-                    pageSize: 10,
+                    pageSize: 5,
                 },
                 headers: {
                     Authorization: `Bearer ${access_token}`,
@@ -118,7 +124,7 @@ export default function MainDashboard() {
                     <span
                         role="button"
                         className="text-green-600 text-right hover:text-green-700"
-                        onClick={() => setOpen(true)}
+                        onClick={() => setNewTransacationModalIsOpen(true)}
                     >
                         + Nova transação
                     </span>
@@ -127,6 +133,7 @@ export default function MainDashboard() {
                             columns={tableColumns}
                             rows={transactions.data}
                             setTransactions={setTransactions}
+                            setAmountDetail={setAmountDetail}
                         />
                     )}
                 </div>
@@ -134,9 +141,15 @@ export default function MainDashboard() {
 
             <Modal
                 title="Nova transação"
-                content={<NewTransaction />}
-                open={open}
-                setOpen={setOpen}
+                content={
+                    <NewTransaction
+                        setTransactions={setTransactions}
+                        setAmountDetail={setAmountDetail}
+                        setOpen={setNewTransacationModalIsOpen}
+                    />
+                }
+                open={newTransacationModalIsOpen}
+                setOpen={setNewTransacationModalIsOpen}
             />
         </main>
     )
