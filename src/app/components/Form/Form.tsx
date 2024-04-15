@@ -36,15 +36,19 @@ export default function GenericForm({
                     render={({ field, formState: { errors } }) => {
                         if (input.type === 'dropdown' && input.options) {
                             return (
-                                <div className="flex flex-col gap-1 flex-1">
-                                    <span className="text-neutral-200">
-                                        {input.label}
-                                    </span>
+                                <div className="flex flex-col flex-1 gap-1">
                                     <Dropdown
-                                        selectedValue={field.value}
+                                        name={input.name}
+                                        fieldValue={field.value}
                                         placeholder={input.placeholder}
+                                        label={input.label}
                                         options={input.options}
                                     />
+                                    {errors && (
+                                        <span className="text-red-600">
+                                            {errors[input.name]?.message as ReactNode}
+                                        </span>
+                                    )}
                                 </div>
                             )
                         }

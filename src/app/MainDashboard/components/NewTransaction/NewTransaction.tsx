@@ -1,7 +1,7 @@
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 import GenericForm from '@/app/components/Form/Form'
 import { TFormInput } from '@/app/types/form'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { TTransactions } from '@/app/types/mainDashboard'
 import { X } from '@phosphor-icons/react'
 
@@ -10,7 +10,7 @@ type Props = {
 }
 
 export default function NewTransaction({ setOpen }: Props): ReactElement {
-    const { reset, handleSubmit, control, setValue } = useForm<TTransactions>()
+    const methods = useForm<TTransactions>()
 
     const formInputs: TFormInput[] = [
         {
@@ -25,9 +25,10 @@ export default function NewTransaction({ setOpen }: Props): ReactElement {
         },
         {
             label: 'Data',
-            placeholder: 'Selecione a data da transação',
+            placeholder: 'Digite a data da transação',
             name: 'transactionDate',
-            type: 'input',
+            type: 'date',
+            variant: 'date',
             rules: {
                 required: { value: true, message: 'Campo obrigatório' },
             },
@@ -42,12 +43,10 @@ export default function NewTransaction({ setOpen }: Props): ReactElement {
                 {
                     value: 'Entrada',
                     label: 'Entrada',
-                    onClick: () => setValue('transactionType', 'Entrada'),
                 },
                 {
                     value: 'Saida',
                     label: 'Saida',
-                    onClick: () => setValue('transactionType', 'Saida'),
                 },
             ],
             rules: {
@@ -67,9 +66,13 @@ export default function NewTransaction({ setOpen }: Props): ReactElement {
         },
     ]
 
-    const onSubmit = (values: any) => console.log(values)
+    const onSubmit = (values: any) =>
+        console.log({
+            ...values,
+            transactionDate: new Date(values.transactionDate).toISOString(),
+        })
     const onReset = () =>
-        reset({
+        methods.reset({
             transactionName: '',
             transactionDate: '',
             transactionType: '',
@@ -92,12 +95,14 @@ export default function NewTransaction({ setOpen }: Props): ReactElement {
                 />
             </div>
 
-            <GenericForm
-                formInputs={formInputs}
-                onSubmit={handleSubmit(onSubmit)}
-                onReset={onReset}
-                control={control}
-            />
+            <FormProvider {...methods}>
+                <GenericForm
+                    formInputs={formInputs}
+                    onSubmit={methods.handleSubmit(onSubmit)}
+                    onReset={onReset}
+                    control={methods.control}
+                />
+            </FormProvider>
         </div>
     )
 }

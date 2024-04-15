@@ -5,14 +5,13 @@ export type TFormInput = {
     name: string
     label: string
     size?: 'lg' | 'sm' | 'md'
-    type: 'input' | 'dropdown'
+    type: 'input' | 'dropdown' | 'date'
     onResetField?: () => void
     options?: {
         label: string
         value: string
-        onClick: () => void
     }[]
-    variant?: 'number' | 'text' | 'password'
+    variant?: 'number' | 'text' | 'password' | 'date'
     rules: {
         required: {
             value: boolean

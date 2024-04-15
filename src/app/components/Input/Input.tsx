@@ -6,7 +6,7 @@ import clsx from 'clsx'
 type Props = {
     label: string
     size?: 'sm' | 'md' | 'lg'
-    variant?: 'text' | 'password' | 'number'
+    variant?: 'text' | 'password' | 'number' | 'date'
     placeholder: string
     maxLength?: number
     initialValue?: string | number
@@ -37,11 +37,13 @@ export default function Input({
                 )}
             >
                 <input
+                    lang="pt-BR"
                     maxLength={maxLength}
                     value={initialValue}
                     placeholder={placeholder}
                     type={showPassword ? 'text' : variant}
                     className={clsx(
+                        variant === 'date' && 'text-neutral-500',
                         'flex-1',
                         'border-none',
                         'shadow-none',
