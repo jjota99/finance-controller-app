@@ -17,7 +17,7 @@ import Modal from '@/app/components/Modal/Modal'
 
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
-    const [transactions, setTransactions] = useState<TTransactions[]>([])
+    const [transactions, setTransactions] = useState<TTransactions>()
     const [open, setOpen] = useState<boolean>(false)
 
     const { getTokenInLocalStorage, setUser, user } = useAuthStore()
@@ -85,10 +85,14 @@ export default function MainDashboard() {
             )
 
             api.get(`transactions/${user.id}`, {
+                params: {
+                    page: 1,
+                    pageSize: 10,
+                },
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                 },
-            }).then((response: AxiosResponse<TTransactions[], any>) =>
+            }).then((response: AxiosResponse<TTransactions, any>) =>
                 setTransactions(response.data)
             )
         }
@@ -118,7 +122,13 @@ export default function MainDashboard() {
                     >
                         + Nova transação
                     </span>
-                    <Table columns={tableColumns} rows={transactions} />
+                    {transactions && (
+                        <Table
+                            columns={tableColumns}
+                            rows={transactions.data}
+                            setTransactions={setTransactions}
+                        />
+                    )}
                 </div>
             </div>
 

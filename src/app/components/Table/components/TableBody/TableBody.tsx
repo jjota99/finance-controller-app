@@ -3,7 +3,12 @@ import clsx from 'clsx'
 import { TTransactions } from '@/app/types/mainDashboard'
 
 type Props = {
-    rows: TTransactions[]
+    rows: Array<{
+        transactionName: string
+        transactionDate: string
+        transactionType: string
+        transactionValue: string
+    }>
 }
 
 export default function TableBody({ rows }: Props): ReactElement {
