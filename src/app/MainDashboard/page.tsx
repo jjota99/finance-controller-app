@@ -14,6 +14,7 @@ import AmountCard from '@/app/components/AmountCard'
 import Table from '@/app/components/Table/Table'
 import Dialog from '@/app/components/Dialog/Dialog'
 import NewTransaction from '@/app/MainDashboard/components/NewTransaction/NewTransaction'
+import Modal from '@/app/components/Modal/Modal'
 
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
@@ -122,7 +123,8 @@ export default function MainDashboard() {
                 </div>
             </div>
 
-            <Dialog
+            <Modal
+                title="Nova transação"
                 content={<NewTransaction setOpen={setOpen} />}
                 open={open}
                 setOpen={setOpen}

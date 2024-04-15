@@ -3,13 +3,8 @@ import GenericForm from '@/app/components/Form/Form'
 import { TFormInput } from '@/app/types/form'
 import { FormProvider, useForm } from 'react-hook-form'
 import { TTransactions } from '@/app/types/mainDashboard'
-import { X } from '@phosphor-icons/react'
 
-type Props = {
-    setOpen: Dispatch<SetStateAction<boolean>>
-}
-
-export default function NewTransaction({ setOpen }: Props): ReactElement {
+export default function NewTransaction(): ReactElement {
     const methods = useForm<TTransactions>()
 
     const formInputs: TFormInput[] = [
@@ -66,7 +61,7 @@ export default function NewTransaction({ setOpen }: Props): ReactElement {
         },
     ]
 
-    const onSubmit = (values: any) =>
+    const onSubmit = (values: TTransactions) =>
         console.log({
             ...values,
             transactionDate: new Date(values.transactionDate).toISOString(),
@@ -81,20 +76,6 @@ export default function NewTransaction({ setOpen }: Props): ReactElement {
 
     return (
         <div className="w-full h-full flex flex-1 flex-col gap-y-8">
-            <div className="flex w-full justify-between align-middle">
-                <span className="text-neutral-200 text-xl font-semibold">
-                    Nova transação
-                </span>
-
-                <X
-                    weight="bold"
-                    height={20}
-                    width={20}
-                    className="text-neutral-200 cursor-pointer"
-                    onClick={() => setOpen(false)}
-                />
-            </div>
-
             <FormProvider {...methods}>
                 <GenericForm
                     formInputs={formInputs}
