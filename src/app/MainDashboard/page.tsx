@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
 import { AxiosResponse } from 'axios'
@@ -14,6 +14,7 @@ import AmountCard from '@/app/components/AmountCard'
 import Table from '@/app/components/Table/Table'
 import NewTransaction from '@/app/components/NewTransaction/NewTransaction'
 import Modal from '@/app/components/Modal/Modal'
+import { ArrowsClockwise } from '@phosphor-icons/react'
 
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
@@ -73,6 +74,71 @@ export default function MainDashboard() {
         },
     ]
 
+    const tablePages = useMemo(() => {
+        const total = transactions?.total
+        if (total) {
+            const pageNumbers = Math.ceil(total / 10)
+            const pageNumbersList = []
+
+            for (let i = 0; i < pageNumbers; i++) {
+                pageNumbersList.push(i + 1)
+            }
+
+            return pageNumbersList
+        }
+    }, [transactions])
+
+    const handleFetchTransactions = useCallback(() => {
+        if (user.id) {
+            api.get(`transactions/amount-detail/${user.id}`, {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((response: AxiosResponse<TAmountDetail, any>) =>
+                setAmountDetail(response.data)
+            )
+
+            api.get(`transactions/${user.id}`, {
+                params: {
+                    page: 1,
+                    pageSize: 10,
+                },
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }).then((response: AxiosResponse<TTransactions, any>) =>
+                setTransactions(response.data)
+            )
+        }
+    }, [user])
+
+    const tableScopeMemo = useMemo(() => {
+        if (transactions && transactions.data.length > 0) {
+            return (
+                <Table
+                    columns={tableColumns}
+                    tablePages={tablePages && tablePages}
+                    rows={transactions?.data || []}
+                    setTransactions={setTransactions}
+                    setAmountDetail={setAmountDetail}
+                />
+            )
+        }
+
+        return (
+            <div className="w-full bg-neutral-900 h-[200px] flex items-center justify-center rounded">
+                <div className="flex flex-col gap-4 items-center justify-center">
+                    <span className="text-neutral-200 text-2xl">Não há dados</span>
+                    <ArrowsClockwise
+                        role="button"
+                        onClick={() => handleFetchTransactions()}
+                        className="text-3xl text-neutral-200 cursor-pointer"
+                    />
+                </div>
+            </div>
+        )
+    }, [transactions])
+
     useEffect(() => {
         api.get('/auth/me', { params: { token: access_token } }).then(
             (response: AxiosResponse<Partial<TMeResponse>, { token: string }>) =>
@@ -93,7 +159,7 @@ export default function MainDashboard() {
             api.get(`transactions/${user.id}`, {
                 params: {
                     page: 1,
-                    pageSize: 5,
+                    pageSize: 10,
                 },
                 headers: {
                     Authorization: `Bearer ${access_token}`,
@@ -128,14 +194,8 @@ export default function MainDashboard() {
                     >
                         + Nova transação
                     </span>
-                    {transactions && (
-                        <Table
-                            columns={tableColumns}
-                            rows={transactions.data}
-                            setTransactions={setTransactions}
-                            setAmountDetail={setAmountDetail}
-                        />
-                    )}
+
+                    {tableScopeMemo}
                 </div>
             </div>
 

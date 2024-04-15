@@ -1,8 +1,7 @@
-import { Dispatch, ReactElement, SetStateAction, useCallback, useState } from 'react'
+import { ReactElement } from 'react'
 import clsx from 'clsx'
-import { TTransaction, TTransactions } from '@/app/types/mainDashboard'
+import { TTransaction } from '@/app/types/mainDashboard'
 import { Trash } from '@phosphor-icons/react'
-import { api } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
 
 type Props = {

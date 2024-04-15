@@ -19,6 +19,7 @@ type Props = {
         label: string
     }[]
     rows: TTransaction[]
+    tablePages: number[]
     setTransactions: Dispatch<SetStateAction<TTransactions | undefined>>
     setAmountDetail: Dispatch<SetStateAction<TAmountDetail | undefined>>
 }
@@ -26,6 +27,7 @@ type Props = {
 export default function Table({
     columns,
     rows,
+    tablePages,
     setTransactions,
     setAmountDetail,
 }: Props) {
@@ -63,7 +65,7 @@ export default function Table({
                     .get(`transactions/${user.id}`, {
                         params: {
                             page: 1,
-                            pageSize: 5,
+                            pageSize: 10,
                         },
                         headers: {
                             Authorization: `Bearer ${access_token}`,
@@ -81,7 +83,7 @@ export default function Table({
         <table className="w-full">
             <TableHeader columns={columns} />
             <TableBody rows={rows} handleDeleteTransactions={handleDeleteTransactions} />
-            <TableFooter pages={[1, 2, 3]} setTransactions={setTransactions} />
+            <TableFooter pages={tablePages} setTransactions={setTransactions} />
         </table>
     )
 }
