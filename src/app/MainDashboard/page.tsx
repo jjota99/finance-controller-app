@@ -12,8 +12,7 @@ import {
 } from '@/app/types/mainDashboard'
 import AmountCard from '@/app/components/AmountCard'
 import Table from '@/app/components/Table/Table'
-import Dialog from '@/app/components/Dialog/Dialog'
-import NewTransaction from '@/app/MainDashboard/components/NewTransaction/NewTransaction'
+import NewTransaction from '@/app/components/NewTransaction/NewTransaction'
 import Modal from '@/app/components/Modal/Modal'
 
 export default function MainDashboard() {
@@ -125,7 +124,7 @@ export default function MainDashboard() {
 
             <Modal
                 title="Nova transação"
-                content={<NewTransaction setOpen={setOpen} />}
+                content={<NewTransaction />}
                 open={open}
                 setOpen={setOpen}
             />
