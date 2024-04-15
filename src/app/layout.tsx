@@ -3,6 +3,7 @@ import './globals.css'
 
 import { Toaster } from 'sonner'
 import Header from '@/app/components/Header/Header'
+import Footer from '@/app/components/Footer/Footer'
 
 export const metadata: Metadata = {
     title: 'Finance Controller',
@@ -20,6 +21,7 @@ export default function RootLayout({
                 <Toaster position="top-right" />
                 <Header />
                 {children}
+                <Footer />
             </body>
         </html>
     )
