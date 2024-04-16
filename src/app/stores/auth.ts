@@ -5,7 +5,7 @@ import { TMeResponse } from '@/app/types/mainDashboard'
 type TStoreState = {
     user: Partial<TMeResponse>
     setUser: (param: Partial<TMeResponse>) => void
-    saveTokenInLocalStorage: (token: string) => void
+    saveTokenInLocalStorage: (token?: string) => void
     getTokenInLocalStorage: () => string | null
 }
 

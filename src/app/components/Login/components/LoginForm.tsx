@@ -5,11 +5,11 @@ import { compareByOrder } from '@/app/utils/CompareByOrder'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { TLoginForm } from '@/app/types/login'
 import { TFormInput } from '@/app/types/form'
-import { api } from '@/app/api/api'
-import { AxiosResponse } from 'axios'
+import { API_RESPONSE_ENUM } from '@/app/api/api'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/app/stores/auth'
 import { useRouter } from 'next/navigation'
+import { createAccountRequest, loginRequest } from '@/app/api/services/login'
 
 type Props = {
     formType: FormTypeEnum
@@ -24,37 +24,37 @@ export default function LoginForm({ formType, setFormType }: Props): ReactElemen
     const { handleSubmit, reset, control } = useForm<TLoginForm, Partial<TLoginForm>>()
     const onSubmit: SubmitHandler<TLoginForm> = async (data: TLoginForm) => {
         if (formType === FormTypeEnum.REGISTER) {
-            await api
-                .post('/users', data)
-                .then((response: AxiosResponse<void, TLoginForm>) => {
-                    toast.success('Conta criada com sucesso!', {
-                        className: 'bg-green-700 text-neutral-200',
-                    })
-                    onReset()
-                    setFormType(FormTypeEnum.LOGIN)
-                })
-                .catch((error) =>
-                    toast.error(error.message, {
-                        className: 'bg-red-700 text-neutral-200',
-                    })
-                )
+            const createAccountReq = await createAccountRequest(data)
 
+            if (createAccountReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+                toast.error('Conta criada com sucesso!', {
+                    className: 'bg-green-700 text-neutral-200',
+                })
+                onReset()
+                setFormType(FormTypeEnum.LOGIN)
+
+                return
+            }
+
+            toast.error(createAccountReq?.message, {
+                className: 'bg-green-700 text-neutral-200',
+            })
+        }
+
+        const loginReq = await loginRequest(data, access_token)
+
+        if (loginReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+            saveTokenInLocalStorage(loginReq?.data)
+            router.push('/MainDashboard')
+            toast.success('Login efetuado com sucesso!', {
+                className: 'bg-green-700 text-neutral-200',
+            })
             return
         }
 
-        await api
-            .post('/auth/sign-in', { ...data, token: access_token })
-            .then((response: AxiosResponse<{ access_token: string }, TLoginForm>) => {
-                if (response.status === 200) {
-                    saveTokenInLocalStorage(response?.data?.access_token)
-                    router.push('/MainDashboard')
-                }
-            })
-            .catch((error) => {
-                toast.error(error.response.data.message, {
-                    className: 'bg-red-700 text-neutral-200',
-                })
-            })
+        toast.error(loginReq?.message, {
+            className: 'bg-red-700 text-neutral-200',
+        })
     }
     const onReset = () =>
         reset({

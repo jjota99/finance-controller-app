@@ -52,7 +52,7 @@ const createTransactionRequest = async (
     userId: number,
     access_token: string | null,
     values: TTransaction
-): Promise<{ status: API_RESPONSE_ENUM } | undefined> => {
+): Promise<{ status: API_RESPONSE_ENUM; message?: string } | undefined> => {
     return await api
         .post(
             'transactions/create',
@@ -77,7 +77,10 @@ const createTransactionRequest = async (
             }
         })
         .catch((error) => {
-            return { status: API_RESPONSE_ENUM.ERROR }
+            return {
+                status: API_RESPONSE_ENUM.ERROR,
+                message: error.response.data.message,
+            }
         })
 }
 
@@ -85,7 +88,7 @@ const deleteTransactionRequest = async (
     id: number,
     userId: number,
     access_token: string | null
-): Promise<{ status: API_RESPONSE_ENUM } | undefined> => {
+): Promise<{ status: API_RESPONSE_ENUM; message?: string } | undefined> => {
     return await api
         .delete(`transactions/delete/id/${id}/user/${userId}/`, {
             headers: {
@@ -95,6 +98,12 @@ const deleteTransactionRequest = async (
         .then((response) => {
             if (response.status === 200) {
                 return { status: API_RESPONSE_ENUM.SUCCESS }
+            }
+        })
+        .catch((error) => {
+            return {
+                status: API_RESPONSE_ENUM.ERROR,
+                message: error.response.data.message,
             }
         })
 }
