@@ -3,12 +3,13 @@ import TableBody from '@/app/components/Table/components/TableBody/TableBody'
 import { TAmountDetail, TTransaction, TTransactions } from '@/app/types/mainDashboard'
 import TableFooter from '@/app/components/Table/components/TableFooter/TableFooter'
 import { Dispatch, SetStateAction, useCallback } from 'react'
-import { api } from '@/app/api/api'
-import { toast } from 'sonner'
-import { AxiosResponse } from 'axios'
+import { API_RESPONSE_ENUM } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
+import { deleteTransactionRequest } from '@/app/api/services/MainDashboard'
+import { toast } from 'sonner'
 
 type Props = {
+    handleFetchTransactions: () => void
     columns: {
         key:
             | 'transactionName'
@@ -25,11 +26,11 @@ type Props = {
 }
 
 export default function Table({
+    handleFetchTransactions,
     columns,
     rows,
     tablePages,
     setTransactions,
-    setAmountDetail,
 }: Props) {
     const { getTokenInLocalStorage, user } = useAuthStore()
     const access_token = getTokenInLocalStorage()
@@ -37,43 +38,24 @@ export default function Table({
     const handleDeleteTransactions = useCallback(
         async (id?: number, userId?: number | null) => {
             if (userId && id) {
-                await api
-                    .delete(`transactions/delete/id/${id}/user/${userId}/`, {
-                        headers: {
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                    })
-                    .then(
-                        (response) =>
-                            response.status === 200 &&
-                            toast.success('Transação excluída com sucesso!', {
-                                className: 'bg-green-700 text-neutral-200',
-                            })
-                    )
+                const deleteTransacationReq = await deleteTransactionRequest(
+                    id,
+                    userId,
+                    access_token
+                )
 
-                await api
-                    .get(`transactions/amount-detail/${user.id}`, {
-                        headers: {
-                            Authorization: `Bearer ${access_token}`,
-                        },
+                if (deleteTransacationReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+                    toast.success('Transação excluída com sucesso!', {
+                        className: 'bg-green-700 text-neutral-200',
                     })
-                    .then((response: AxiosResponse<TAmountDetail, any>) =>
-                        setAmountDetail(response.data)
-                    )
+                    handleFetchTransactions()
 
-                await api
-                    .get(`transactions/${user.id}`, {
-                        params: {
-                            page: 1,
-                            pageSize: 10,
-                        },
-                        headers: {
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                    })
-                    .then((response: AxiosResponse<TTransactions, any>) =>
-                        setTransactions(response.data)
-                    )
+                    return
+                }
+
+                toast.success(deleteTransacationReq?.message, {
+                    className: 'bg-red-700 text-neutral-200',
+                })
             }
         },
         [user]

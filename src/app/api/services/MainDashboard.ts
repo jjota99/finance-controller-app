@@ -4,12 +4,13 @@ import { TAmountDetail, TTransaction, TTransactions } from '@/app/types/mainDash
 
 const getTransactionsRequest = async (
     userId: number,
-    access_token: string | null
+    access_token: string | null,
+    page?: number
 ): Promise<{ status: API_RESPONSE_ENUM; data?: TTransactions } | undefined> => {
     return await api
         .get(`transactions/${userId}`, {
             params: {
-                page: 1,
+                page: 1 || page,
                 pageSize: 10,
             },
             headers: {
@@ -19,6 +20,10 @@ const getTransactionsRequest = async (
         .then((response: AxiosResponse<TTransactions, any>) => {
             if (response.status === 200) {
                 return { status: API_RESPONSE_ENUM.SUCCESS, data: response.data }
+            }
+
+            if (response.status === 204) {
+                return { status: API_RESPONSE_ENUM.EMPTY, data: { data: [], total: 0 } }
             }
         })
         .catch((error) => {
@@ -72,7 +77,7 @@ const createTransactionRequest = async (
             }
         )
         .then((response) => {
-            if (response.status === 200) {
+            if (response.status === 201) {
                 return { status: API_RESPONSE_ENUM.SUCCESS }
             }
         })

@@ -49,7 +49,7 @@ export default function TableBody({
                         {row.transactionType === 'Saida' && '-'}R${' '}
                         {row.transactionValue
                             .toString()
-                            .substring(row.transactionType === 'positive' ? 1 : 2)}
+                            .substring(row.transactionType === 'Saida' ? 2 : 1)}
                     </td>
                     <td className="py-4 flex justify-center">
                         {

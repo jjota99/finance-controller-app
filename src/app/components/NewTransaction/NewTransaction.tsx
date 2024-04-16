@@ -3,20 +3,21 @@ import GenericForm from '@/app/components/Form/Form'
 import { TFormInput } from '@/app/types/form'
 import { FormProvider, useForm } from 'react-hook-form'
 import { TAmountDetail, TTransaction, TTransactions } from '@/app/types/mainDashboard'
-import { api } from '@/app/api/api'
+import { api, API_RESPONSE_ENUM } from '@/app/api/api'
 import { AxiosResponse } from 'axios'
 import { useAuthStore } from '@/app/stores/auth'
+import { createTransactionRequest } from '@/app/api/services/MainDashboard'
 import { toast } from 'sonner'
 
 type Props = {
+    handleFetchTransactions: () => void
     setTransactions: Dispatch<SetStateAction<TTransactions | undefined>>
     setAmountDetail: Dispatch<SetStateAction<TAmountDetail | undefined>>
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export default function NewTransaction({
-    setTransactions,
-    setAmountDetail,
+    handleFetchTransactions,
     setOpen,
 }: Props): ReactElement {
     const methods = useForm<TTransaction>()
@@ -82,61 +83,28 @@ export default function NewTransaction({
     const onSubmit = useCallback(
         async (values: TTransaction) => {
             if (user.id && values) {
-                await api
-                    .post(
-                        'transactions/create',
-                        {
-                            ...values,
-                            transactionDate: new Date(
-                                values.transactionDate
-                            ).toISOString(),
-                            transactionValue:
-                                values.transactionType === 'Saida'
-                                    ? values.transactionValue * -1
-                                    : values.transactionValue,
-                            userId: user.id,
-                        },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${access_token}`,
-                            },
-                        }
-                    )
-                    .then((response) => {
-                        if (response.status === 200) {
-                            return toast.success('Transação criada com sucesso!', {
-                                className: 'bg-green-700 text-neutral-200',
-                            })
-                        }
+                const createTransactionReq = await createTransactionRequest(
+                    user.id,
+                    access_token,
+                    values
+                )
+
+                if (createTransactionReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+                    onReset()
+                    setOpen(false)
+                    handleFetchTransactions()
+
+                    toast.success('Transação criada com sucesso!', {
+                        className: 'bg-green-700 text-neutral-200',
                     })
+
+                    return
+                }
+
+                toast.error(createTransactionReq?.message, {
+                    className: 'bg-red-700 text-neutral-200',
+                })
             }
-
-            await api
-                .get(`transactions/${user.id}`, {
-                    params: {
-                        page: 1,
-                        pageSize: 5,
-                    },
-                    headers: {
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                })
-                .then((response: AxiosResponse<TTransactions, any>) =>
-                    setTransactions(response.data)
-                )
-
-            await api
-                .get(`transactions/amount-detail/${user.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                })
-                .then((response: AxiosResponse<TAmountDetail, any>) =>
-                    setAmountDetail(response.data)
-                )
-
-            onReset()
-            setOpen(false)
         },
         [user]
     )

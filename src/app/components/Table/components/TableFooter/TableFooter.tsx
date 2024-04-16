@@ -1,8 +1,8 @@
 import { Dispatch, ReactElement, SetStateAction, useCallback } from 'react'
 import { TTransactions } from '@/app/types/mainDashboard'
-import { api } from '@/app/api/api'
-import { AxiosResponse } from 'axios'
+import { API_RESPONSE_ENUM } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
+import { getTransactionsRequest } from '@/app/api/services/MainDashboard'
 
 type Props = {
     pages?: number[]
@@ -14,21 +14,18 @@ export default function TableFooter({ pages, setTransactions }: Props): ReactEle
     const access_token = getTokenInLocalStorage()
 
     const onPageChange = useCallback(
-        (page: number) => {
-            if (user) {
-                return api
-                    .get(`transactions/${user.id}`, {
-                        params: {
-                            page,
-                            pageSize: 5,
-                        },
-                        headers: {
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                    })
-                    .then((response: AxiosResponse<TTransactions, any>) =>
-                        setTransactions(response.data)
-                    )
+        async (page: number) => {
+            if (user.id) {
+                const { id } = user
+                const getTransactionsReq = await getTransactionsRequest(
+                    id,
+                    access_token,
+                    page
+                )
+
+                if (getTransactionsReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+                    setTransactions(getTransactionsReq.data)
+                }
             }
         },
         [setTransactions, user]

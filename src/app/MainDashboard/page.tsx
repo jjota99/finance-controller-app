@@ -1,20 +1,19 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { api } from '@/app/api/api'
+import { API_RESPONSE_ENUM } from '@/app/api/api'
 import { useAuthStore } from '@/app/stores/auth'
-import { AxiosResponse } from 'axios'
-import {
-    TAmountCard,
-    TAmountDetail,
-    TMeResponse,
-    TTransactions,
-} from '@/app/types/mainDashboard'
+import { TAmountCard, TAmountDetail, TTransactions } from '@/app/types/mainDashboard'
 import AmountCard from '@/app/components/AmountCard'
 import Table from '@/app/components/Table/Table'
 import NewTransaction from '@/app/components/NewTransaction/NewTransaction'
 import Modal from '@/app/components/Modal/Modal'
 import { ArrowsClockwise } from '@phosphor-icons/react'
+import { meRequest } from '@/app/api/services/login'
+import {
+    getTransactionsAmountRequest,
+    getTransactionsRequest,
+} from '@/app/api/services/MainDashboard'
 
 export default function MainDashboard() {
     const [amountDetail, setAmountDetail] = useState<TAmountDetail>()
@@ -42,7 +41,6 @@ export default function MainDashboard() {
             status: amountDetail?.total?.status,
         },
     ]
-
     const tableColumns: Array<{
         key:
             | 'transactionName'
@@ -73,7 +71,6 @@ export default function MainDashboard() {
             label: 'Ações',
         },
     ]
-
     const tablePages = useMemo(() => {
         const total = transactions?.total
         if (total) {
@@ -88,34 +85,40 @@ export default function MainDashboard() {
         }
     }, [transactions])
 
-    const handleFetchTransactions = useCallback(() => {
+    const handleFetchTransactions = useCallback(async () => {
         if (user.id) {
-            api.get(`transactions/amount-detail/${user.id}`, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((response: AxiosResponse<TAmountDetail, any>) =>
-                setAmountDetail(response.data)
+            const getTransactionsAmountReq = await getTransactionsAmountRequest(
+                user.id,
+                access_token
             )
 
-            api.get(`transactions/${user.id}`, {
-                params: {
-                    page: 1,
-                    pageSize: 10,
-                },
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((response: AxiosResponse<TTransactions, any>) =>
-                setTransactions(response.data)
-            )
+            const getTransactionsReq = await getTransactionsRequest(user.id, access_token)
+
+            if (getTransactionsAmountReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+                setAmountDetail(getTransactionsAmountReq.data)
+            }
+
+            if (
+                getTransactionsReq?.status === API_RESPONSE_ENUM.SUCCESS ||
+                getTransactionsReq?.status === API_RESPONSE_ENUM.EMPTY
+            ) {
+                setTransactions(getTransactionsReq?.data)
+            }
         }
     }, [user])
+    const handleFetchMe = useCallback(async () => {
+        const meReq = await meRequest(access_token)
+
+        if (meReq?.status === API_RESPONSE_ENUM.SUCCESS) {
+            setUser(meReq?.data)
+        }
+    }, [access_token])
 
     const tableScopeMemo = useMemo(() => {
         if (transactions && transactions.data.length > 0) {
             return (
                 <Table
+                    handleFetchTransactions={handleFetchTransactions}
                     columns={tableColumns}
                     tablePages={tablePages && tablePages}
                     rows={transactions?.data || []}
@@ -140,33 +143,12 @@ export default function MainDashboard() {
     }, [transactions])
 
     useEffect(() => {
-        api.get('/auth/me', { params: { token: access_token } }).then(
-            (response: AxiosResponse<Partial<TMeResponse>, { token: string }>) =>
-                setUser(response.data)
-        )
+        handleFetchMe()
     }, [])
 
     useEffect(() => {
         if (user.id) {
-            api.get(`transactions/amount-detail/${user.id}`, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((response: AxiosResponse<TAmountDetail, any>) =>
-                setAmountDetail(response.data)
-            )
-
-            api.get(`transactions/${user.id}`, {
-                params: {
-                    page: 1,
-                    pageSize: 10,
-                },
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }).then((response: AxiosResponse<TTransactions, any>) =>
-                setTransactions(response.data)
-            )
+            handleFetchTransactions()
         }
     }, [user.id])
 
@@ -203,6 +185,7 @@ export default function MainDashboard() {
                 title="Nova transação"
                 content={
                     <NewTransaction
+                        handleFetchTransactions={handleFetchTransactions}
                         setTransactions={setTransactions}
                         setAmountDetail={setAmountDetail}
                         setOpen={setNewTransacationModalIsOpen}

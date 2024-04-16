@@ -7,4 +7,5 @@ export const api: AxiosInstance = axios.create({
 export enum API_RESPONSE_ENUM {
     SUCCESS = 'SUCCESS',
     ERROR = 'ERROR',
+    EMPTY = 'EMPTY',
 }

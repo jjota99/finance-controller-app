@@ -1,6 +1,7 @@
 import { api, API_RESPONSE_ENUM } from '@/app/api/api'
 import { AxiosResponse } from 'axios'
 import { TLoginForm } from '@/app/types/login'
+import { TMeResponse } from '@/app/types/mainDashboard'
 
 const createAccountRequest = async (
     data: TLoginForm
@@ -44,4 +45,16 @@ const loginRequest = async (
         })
 }
 
-export { createAccountRequest, loginRequest }
+const meRequest = async (
+    access_token: string | null
+): Promise<{ status: API_RESPONSE_ENUM; data?: Partial<TMeResponse> } | undefined> => {
+    return await api
+        .get('/auth/me', { params: { token: access_token } })
+        .then((response: AxiosResponse<Partial<TMeResponse>, { token: string }>) => {
+            if (response.status === 200) {
+                return { status: API_RESPONSE_ENUM.SUCCESS, data: response?.data }
+            }
+        })
+}
+
+export { createAccountRequest, loginRequest, meRequest }
