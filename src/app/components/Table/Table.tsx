@@ -19,7 +19,7 @@ type Props = {
         label: string
     }[]
     rows: TTransaction[]
-    tablePages: number[]
+    tablePages?: number[]
     setTransactions: Dispatch<SetStateAction<TTransactions | undefined>>
     setAmountDetail: Dispatch<SetStateAction<TAmountDetail | undefined>>
 }

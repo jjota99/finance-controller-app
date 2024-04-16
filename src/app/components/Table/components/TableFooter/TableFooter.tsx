@@ -5,7 +5,7 @@ import { AxiosResponse } from 'axios'
 import { useAuthStore } from '@/app/stores/auth'
 
 type Props = {
-    pages: number[]
+    pages?: number[]
     setTransactions: Dispatch<SetStateAction<TTransactions | undefined>>
 }
 
@@ -38,7 +38,7 @@ export default function TableFooter({ pages, setTransactions }: Props): ReactEle
         <tfoot>
             <tr className="flex py-4 gap-2 justify-start items-center end">
                 <td className="flex gap-x-2">
-                    {pages.map((page) => (
+                    {pages?.map((page) => (
                         <div
                             key={page}
                             onClick={() => onPageChange(page)}
